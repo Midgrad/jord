@@ -1,7 +1,7 @@
 #ifndef GEODETIC_H
 #define GEODETIC_H
 
-#include <string>
+#include <QJsonObject>
 
 #include "jord_traits.h"
 
@@ -10,12 +10,16 @@ namespace jord::domain
 class Geodetic
 {
 public:
-    Geodetic(double latitude, double longitude, float altitude, std::string_view datum);
+    Geodetic(double latitude, double longitude, float altitude,
+             const QString& datum = datums::wgs84);
+    Geodetic(const QJsonObject& json);
+
+    QJsonObject toJson() const;
 
     const double latitude;
     const double longitude;
     const float altitude;
-    const std::string datum;
+    const QString datum;
 };
 } // namespace jord::domain
 
