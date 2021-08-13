@@ -1,0 +1,2 @@
+# jord
+Geodesic types library
