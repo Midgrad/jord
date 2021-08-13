@@ -14,10 +14,10 @@ Geodetic::Geodetic(double latitude, double longitude, float altitude, const QStr
 }
 
 Geodetic::Geodetic(const QJsonObject& json) :
-    latitude(json.value(::latitude).toDouble(std::numeric_limits<double>::quiet_NaN())),
-    longitude(json.value(::longitude).toDouble(std::numeric_limits<double>::quiet_NaN())),
-    altitude(json.value(::altitude).toDouble(std::numeric_limits<double>::quiet_NaN())),
-    datum(json.value(::datum).toString(datums::wgs84))
+    Geodetic(json.value(::latitude).toDouble(std::numeric_limits<double>::quiet_NaN()),
+             json.value(::longitude).toDouble(std::numeric_limits<double>::quiet_NaN()),
+             json.value(::altitude).toDouble(std::numeric_limits<double>::quiet_NaN()),
+             json.value(::datum).toString(datums::wgs84))
 {
 }
 
