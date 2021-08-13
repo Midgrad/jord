@@ -13,6 +13,7 @@ public:
     Geodetic(double latitude, double longitude, float altitude,
              const QString& datum = datums::wgs84);
     Geodetic(const QJsonObject& json);
+    Geodetic();
 
     QJsonObject toJson() const;
     bool isValidPosition() const;
