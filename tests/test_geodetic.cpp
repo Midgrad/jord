@@ -1,10 +1,21 @@
+#include <cmath>
+#include <limits>
+
 #include <gtest/gtest.h>
 
 #include "geodetic.h"
 
 using namespace jord::domain;
 
-class GeodeticTest : public testing::Test
+struct TestArgs
+{
+    double latitude;
+    double longitude;
+    double altitude;
+    QString datum;
+};
+
+class GeodeticTest : public ::testing::TestWithParam<TestArgs>
 {
 public:
     GeodeticTest()
@@ -12,53 +23,95 @@ public:
     }
 };
 
-TEST_F(GeodeticTest, testToJson)
-{
-    double latitude = 44.5432;
-    double longitude = 31.2344;
-    double altitude = 31.2344;
-    QString datum = datums::wgs84;
+INSTANTIATE_TEST_SUITE_P(
+    instantiation, GeodeticTest,
+    ::testing::Values(TestArgs({ 44.5432, 31.2344, 4584.56, datums::wgs84 }),
+                      TestArgs({ 0, 0, 0, "" }),
+                      TestArgs({ std::numeric_limits<double>::quiet_NaN(),
+                                 std::numeric_limits<double>::quiet_NaN(), 0, "" }),
+                      TestArgs({ std::numeric_limits<double>::quiet_NaN(),
+                                 std::numeric_limits<double>::quiet_NaN(),
+                                 std::numeric_limits<double>::quiet_NaN(), "" })));
 
-    Geodetic geodetic(latitude, longitude, altitude, datum);
+TEST_P(GeodeticTest, testToJson)
+{
+    TestArgs args = GetParam();
+
+    Geodetic geodetic(args.latitude, args.longitude, args.altitude, args.datum);
     QJsonObject json = geodetic.toJson();
 
-    EXPECT_DOUBLE_EQ(json.value(::latitude).toDouble(), latitude);
-    EXPECT_DOUBLE_EQ(json.value(::longitude).toDouble(), longitude);
-    EXPECT_FLOAT_EQ(json.value(::altitude).toDouble(), altitude);
-    EXPECT_EQ(json.value(::datum).toString(), datum);
+    if (geodetic.isValidPosition())
+    {
+        EXPECT_DOUBLE_EQ(json.value(::latitude).toDouble(), args.latitude);
+        EXPECT_DOUBLE_EQ(json.value(::longitude).toDouble(), args.longitude);
+    }
+    else
+    {
+        EXPECT_TRUE(std::isnan(json.value(::latitude).toDouble()));
+        EXPECT_TRUE(std::isnan(json.value(::longitude).toDouble()));
+    }
+
+    if (geodetic.isValidAltitude())
+    {
+        EXPECT_FLOAT_EQ(json.value(::altitude).toDouble(), args.altitude);
+    }
+    else
+    {
+        EXPECT_TRUE(std::isnan(json.value(::altitude).toDouble()));
+    }
+
+    EXPECT_EQ(json.value(::datum).toString(), args.datum);
 }
 
-TEST_F(GeodeticTest, testFromJson)
+TEST_P(GeodeticTest, testFromJson)
 {
-    double latitude = 44.5432;
-    double longitude = 31.2344;
-    double altitude = 31.2344;
-    QString datum = datums::wgs84;
+    TestArgs args = GetParam();
 
-    QJsonObject json({ { ::latitude, latitude },
-                       { ::longitude, longitude },
-                       { ::altitude, altitude },
-                       { ::datum, datum } });
+    QJsonObject json({ { ::latitude, args.latitude },
+                       { ::longitude, args.longitude },
+                       { ::altitude, args.altitude },
+                       { ::datum, args.datum } });
     Geodetic geodetic(json);
 
-    EXPECT_DOUBLE_EQ(geodetic.latitude, latitude);
-    EXPECT_DOUBLE_EQ(geodetic.longitude, longitude);
-    EXPECT_FLOAT_EQ(geodetic.altitude, altitude);
-    EXPECT_EQ(geodetic.datum, datum);
+    if (geodetic.isValidPosition())
+    {
+        EXPECT_DOUBLE_EQ(geodetic.latitude, args.latitude);
+        EXPECT_DOUBLE_EQ(geodetic.longitude, args.longitude);
+    }
+
+    if (geodetic.isValidAltitude())
+    {
+        EXPECT_FLOAT_EQ(geodetic.altitude, args.altitude);
+    }
+
+    EXPECT_EQ(geodetic.datum, args.datum);
 }
 
-TEST_F(GeodeticTest, testEquality)
+TEST_P(GeodeticTest, testEquality)
 {
-    double latitude = 44.5432;
-    double longitude = 31.2344;
-    double altitude = 31.2344;
-    QString datum = datums::wgs84;
+    TestArgs args = GetParam();
 
-    Geodetic first(latitude, longitude, altitude, datum);
+    Geodetic first(args.latitude, args.longitude, args.altitude, args.datum);
     Geodetic second(first.toJson());
 
-    EXPECT_DOUBLE_EQ(first.latitude, second.latitude);
-    EXPECT_DOUBLE_EQ(first.longitude, second.longitude);
-    EXPECT_FLOAT_EQ(first.altitude, second.altitude);
+    if (first.isValidPosition())
+    {
+        EXPECT_DOUBLE_EQ(first.latitude, second.latitude);
+        EXPECT_DOUBLE_EQ(first.longitude, second.longitude);
+    }
+    else
+    {
+        EXPECT_TRUE(!second.isValidPosition());
+    }
+
+    if (first.isValidAltitude())
+    {
+        EXPECT_FLOAT_EQ(first.altitude, second.altitude);
+    }
+    else
+    {
+        EXPECT_TRUE(!second.isValidAltitude());
+    }
+
     EXPECT_EQ(first.datum, second.datum);
 }

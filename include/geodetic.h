@@ -15,6 +15,9 @@ public:
     Geodetic(const QJsonObject& json);
 
     QJsonObject toJson() const;
+    bool isValidPosition() const;
+    bool isValidAltitude() const;
+    bool isValid() const;
 
     const double latitude;
     const double longitude;

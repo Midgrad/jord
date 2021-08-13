@@ -1,5 +1,6 @@
 #include "geodetic.h"
 
+#include <cmath>
 #include <limits>
 
 using namespace jord::domain;
@@ -26,4 +27,19 @@ QJsonObject Geodetic::toJson() const
                         { ::longitude, longitude },
                         { ::altitude, altitude },
                         { ::datum, datum } };
+}
+
+bool Geodetic::isValidPosition() const
+{
+    return !std::isnan(latitude) && !std::isnan(longitude);
+}
+
+bool Geodetic::isValidAltitude() const
+{
+    return !std::isnan(altitude);
+}
+
+bool Geodetic::isValid() const
+{
+    return this->isValidPosition() && this->isValidAltitude();
 }
