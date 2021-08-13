@@ -15,16 +15,27 @@ public:
     Geodetic(const QJsonObject& json);
     Geodetic();
 
+    double latitude() const;
+    double longitude() const;
+    float altitude() const;
+    QString datum() const;
+
     QJsonObject toJson() const;
     bool isValidPosition() const;
     bool isValidAltitude() const;
     bool isValid() const;
 
-    const double latitude;
-    const double longitude;
-    const float altitude;
-    const QString datum;
+    Geodetic& operator=(const Geodetic& other);
+    friend bool operator==(const Geodetic& first, const Geodetic& second);
+
+private:
+    double m_latitude;
+    double m_longitude;
+    float m_altitude;
+    QString m_datum;
 };
+
+bool operator==(const Geodetic& first, const Geodetic& second);
 } // namespace jord::domain
 
 #endif // GEODETIC_H

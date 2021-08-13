@@ -75,16 +75,16 @@ TEST_P(GeodeticTest, testFromJson)
 
     if (geodetic.isValidPosition())
     {
-        EXPECT_DOUBLE_EQ(geodetic.latitude, args.latitude);
-        EXPECT_DOUBLE_EQ(geodetic.longitude, args.longitude);
+        EXPECT_DOUBLE_EQ(geodetic.latitude(), args.latitude);
+        EXPECT_DOUBLE_EQ(geodetic.longitude(), args.longitude);
     }
 
     if (geodetic.isValidAltitude())
     {
-        EXPECT_FLOAT_EQ(geodetic.altitude, args.altitude);
+        EXPECT_FLOAT_EQ(geodetic.altitude(), args.altitude);
     }
 
-    EXPECT_EQ(geodetic.datum, args.datum);
+    EXPECT_EQ(geodetic.datum(), args.datum);
 }
 
 TEST_P(GeodeticTest, testEquality)
@@ -96,8 +96,8 @@ TEST_P(GeodeticTest, testEquality)
 
     if (first.isValidPosition())
     {
-        EXPECT_DOUBLE_EQ(first.latitude, second.latitude);
-        EXPECT_DOUBLE_EQ(first.longitude, second.longitude);
+        EXPECT_DOUBLE_EQ(first.latitude(), second.latitude());
+        EXPECT_DOUBLE_EQ(first.longitude(), second.longitude());
     }
     else
     {
@@ -106,12 +106,17 @@ TEST_P(GeodeticTest, testEquality)
 
     if (first.isValidAltitude())
     {
-        EXPECT_FLOAT_EQ(first.altitude, second.altitude);
+        EXPECT_FLOAT_EQ(first.altitude(), second.altitude());
     }
     else
     {
         EXPECT_TRUE(!second.isValidAltitude());
     }
 
-    EXPECT_EQ(first.datum, second.datum);
+    if (first.isValid() && second.isValid())
+    {
+        EXPECT_TRUE(first == second);
+    }
+
+    EXPECT_EQ(first.datum(), second.datum());
 }
