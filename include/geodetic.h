@@ -25,6 +25,8 @@ public:
     bool isValidAltitude() const;
     bool isValid() const;
 
+    Geodetic offsetted(double dLatitude, double dLongitude, float dAltitude) const;
+
     Geodetic& operator=(const Geodetic& other);
     friend bool operator==(const Geodetic& first, const Geodetic& second);
 

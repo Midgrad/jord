@@ -71,6 +71,12 @@ bool Geodetic::isValid() const
     return this->isValidPosition() && this->isValidAltitude();
 }
 
+Geodetic Geodetic::offsetted(double dLatitude, double dLongitude, float dAltitude) const
+{
+    return Geodetic(m_latitude + dLatitude, m_longitude + dLongitude, m_altitude + dAltitude,
+                    m_datum);
+}
+
 Geodetic& Geodetic::operator=(const Geodetic& other)
 {
     m_latitude = other.m_latitude;
