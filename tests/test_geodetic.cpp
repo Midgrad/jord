@@ -5,7 +5,7 @@
 
 #include "geodetic.h"
 
-using namespace jord::domain;
+using namespace md::domain;
 
 struct TestArgs
 {

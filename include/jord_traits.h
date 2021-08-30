@@ -1,7 +1,7 @@
 #ifndef JORD_TRAITS_H
 #define JORD_TRAITS_H
 
-namespace jord::domain
+namespace md::domain
 {
 // Datums provided in proj4 format
 namespace datums

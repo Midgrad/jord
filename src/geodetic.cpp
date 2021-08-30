@@ -3,7 +3,7 @@
 #include <cmath>
 #include <limits>
 
-using namespace jord::domain;
+using namespace md::domain;
 
 Geodetic::Geodetic(double latitude, double longitude, float altitude, const QString& datum) :
     m_latitude(latitude),
@@ -87,7 +87,7 @@ Geodetic& Geodetic::operator=(const Geodetic& other)
     return *this;
 }
 
-namespace jord::domain
+namespace md::domain
 {
 bool operator==(const Geodetic& first, const Geodetic& second)
 {

@@ -5,7 +5,7 @@
 
 #include "jord_traits.h"
 
-namespace jord::domain
+namespace md::domain
 {
 class Geodetic
 {
