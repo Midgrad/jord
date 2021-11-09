@@ -1,7 +1,7 @@
 #ifndef GEODETIC_H
 #define GEODETIC_H
 
-#include <QJsonObject>
+#include <QVariantMap>
 
 #include "jord_traits.h"
 
@@ -12,7 +12,7 @@ class Geodetic
 public:
     Geodetic(double latitude, double longitude, float altitude,
              const QString& datum = datums::wgs84);
-    Geodetic(const QJsonObject& json);
+    Geodetic(const QVariantMap& map);
     Geodetic();
 
     double latitude() const;
@@ -20,7 +20,7 @@ public:
     float altitude() const;
     QString datum() const;
 
-    QJsonObject toJson() const;
+    QVariantMap toVariantMap() const;
     bool isValidPosition() const;
     bool isValidAltitude() const;
     bool isValid() const;
@@ -38,6 +38,6 @@ private:
 };
 
 bool operator==(const Geodetic& first, const Geodetic& second);
-} // namespace jord::domain
+} // namespace md::domain
 
 #endif // GEODETIC_H

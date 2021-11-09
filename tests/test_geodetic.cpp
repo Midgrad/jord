@@ -33,45 +33,45 @@ INSTANTIATE_TEST_SUITE_P(
                                  std::numeric_limits<double>::quiet_NaN(),
                                  std::numeric_limits<double>::quiet_NaN(), "" })));
 
-TEST_P(GeodeticTest, testToJson)
+TEST_P(GeodeticTest, testToVariant)
 {
     TestArgs args = GetParam();
 
     Geodetic geodetic(args.latitude, args.longitude, args.altitude, args.datum);
-    QJsonObject json = geodetic.toJson();
+    QVariantMap map = geodetic.toVariantMap();
 
     if (geodetic.isValidPosition())
     {
-        EXPECT_DOUBLE_EQ(json.value(::latitude).toDouble(), args.latitude);
-        EXPECT_DOUBLE_EQ(json.value(::longitude).toDouble(), args.longitude);
+        EXPECT_DOUBLE_EQ(map.value(::latitude).toDouble(), args.latitude);
+        EXPECT_DOUBLE_EQ(map.value(::longitude).toDouble(), args.longitude);
     }
     else
     {
-        EXPECT_TRUE(std::isnan(json.value(::latitude).toDouble()));
-        EXPECT_TRUE(std::isnan(json.value(::longitude).toDouble()));
+        EXPECT_TRUE(std::isnan(map.value(::latitude).toDouble()));
+        EXPECT_TRUE(std::isnan(map.value(::longitude).toDouble()));
     }
 
     if (geodetic.isValidAltitude())
     {
-        EXPECT_FLOAT_EQ(json.value(::altitude).toDouble(), args.altitude);
+        EXPECT_FLOAT_EQ(map.value(::altitude).toDouble(), args.altitude);
     }
     else
     {
-        EXPECT_TRUE(std::isnan(json.value(::altitude).toDouble()));
+        EXPECT_TRUE(std::isnan(map.value(::altitude).toDouble()));
     }
 
-    EXPECT_EQ(json.value(::datum).toString(), args.datum);
+    EXPECT_EQ(map.value(::datum).toString(), args.datum);
 }
 
 TEST_P(GeodeticTest, testFromJson)
 {
     TestArgs args = GetParam();
 
-    QJsonObject json({ { ::latitude, args.latitude },
-                       { ::longitude, args.longitude },
-                       { ::altitude, args.altitude },
-                       { ::datum, args.datum } });
-    Geodetic geodetic(json);
+    QVariantMap map({ { ::latitude, args.latitude },
+                      { ::longitude, args.longitude },
+                      { ::altitude, args.altitude },
+                      { ::datum, args.datum } });
+    Geodetic geodetic(map);
 
     if (geodetic.isValidPosition())
     {
@@ -92,7 +92,7 @@ TEST_P(GeodeticTest, testEquality)
     TestArgs args = GetParam();
 
     Geodetic first(args.latitude, args.longitude, args.altitude, args.datum);
-    Geodetic second(first.toJson());
+    Geodetic second(first.toVariantMap());
 
     if (first.isValidPosition())
     {

@@ -1,7 +1,6 @@
 #include "geodetic.h"
 
-#include <cmath>
-#include <limits>
+#include <QtMath>
 
 using namespace md::domain;
 
@@ -13,11 +12,9 @@ Geodetic::Geodetic(double latitude, double longitude, float altitude, const QStr
 {
 }
 
-Geodetic::Geodetic(const QJsonObject& json) :
-    Geodetic(json.value(::latitude).toDouble(std::numeric_limits<double>::quiet_NaN()),
-             json.value(::longitude).toDouble(std::numeric_limits<double>::quiet_NaN()),
-             json.value(::altitude).toDouble(std::numeric_limits<float>::quiet_NaN()),
-             json.value(::datum).toString(datums::wgs84))
+Geodetic::Geodetic(const QVariantMap& map) :
+    Geodetic(map.value(::latitude, qQNaN()).toDouble(), map.value(::longitude, qQNaN()).toDouble(),
+             map.value(::altitude, qQNaN()).toFloat(), map.value(::datum, datums::wgs84).toString())
 {
 }
 
@@ -48,9 +45,9 @@ QString Geodetic::datum() const
     return m_datum;
 }
 
-QJsonObject Geodetic::toJson() const
+QVariantMap Geodetic::toVariantMap() const
 {
-    return QJsonObject{ { ::latitude, m_latitude },
+    return QVariantMap{ { ::latitude, m_latitude },
                         { ::longitude, m_longitude },
                         { ::altitude, m_altitude },
                         { ::datum, m_datum } };
@@ -94,4 +91,4 @@ bool operator==(const Geodetic& first, const Geodetic& second)
     return first.m_latitude == second.m_latitude && first.m_longitude == second.m_longitude &&
            first.m_datum == second.m_datum;
 }
-} // namespace jord::domain
+} // namespace md::domain
